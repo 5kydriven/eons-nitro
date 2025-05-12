@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole
+  createdAt DateTime @default(now())
+
+  // Relations
+  transactions Transaction[] // Staff users handle transactions
+}
+
+model Product {
+  id        String   @id @default(cuid())
+  name      String
+  brand     String
+  category  String
+  price     Float
+  cost      Float
+  stock     Int
+  createdAt DateTime @default(now())
+
+  // Relations
+  transactionItems TransactionItem[]
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  staffId     String // The staff in charge of this transaction
+  staff       User     @relation(fields: [staffId], references: [id])
+  createdAt   DateTime @default(now())
+  totalAmount Float
+
+  // Relations
+  items TransactionItem[]
+}
+
+model TransactionItem {
+  id            String      @id @default(cuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  productId     String
+  product       Product     @relation(fields: [productId], references: [id])
+  quantity      Int
+  discount      Float // Discount per item or total — clarify in logic
+  priceAtSale   Float // Price of the product at time of sale
+  total         Float // (priceAtSale - discount) * quantity
+}
