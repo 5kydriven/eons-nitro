@@ -1,4 +1,5 @@
-import { getAllProducts } from '~/service/product';
+import { getProducts } from '~/service/product';
+import { sendResponse } from '~/utils/response';
 
 export default defineEventHandler(async (event) => {
 	const query = getQuery(event);
@@ -9,7 +10,7 @@ export default defineEventHandler(async (event) => {
 	const category = query.category?.toString();
 	const inStockOnly = query.inStock === 'true';
 
-	const result = await getAllProducts({
+	const result = await getProducts({
 		page,
 		limit,
 		query: search,
@@ -17,5 +18,5 @@ export default defineEventHandler(async (event) => {
 		inStockOnly,
 	});
 
-	return result;
+	return sendResponse(event, { data: result.data, meta: result.meta });
 });
