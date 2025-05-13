@@ -8,8 +8,8 @@ datasource db {
 }
 
 enum UserRole {
-  ADMIN
-  STAFF
+  admin
+  staff
 }
 
 model User {
@@ -56,7 +56,9 @@ model TransactionItem {
   productId     String
   product       Product     @relation(fields: [productId], references: [id])
   quantity      Int
-  discount      Float // Discount per item or total — clarify in logic
-  priceAtSale   Float // Price of the product at time of sale
-  total         Float // (priceAtSale - discount) * quantity
+  discount      Float
+  priceAtSale   Float
+  costAtSale    Float // New
+  total         Float
+  profit        Float // Optional, or compute dynamically
 }
